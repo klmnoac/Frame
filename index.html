@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Kanit:wght@100..900&family=Rowdies:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Cropping Page</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Kanit', sans-serif;
+            background-color: #f0f4f7;
+            margin: 0;
+            padding: 20px;
+        }
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .canvas {
+            width: 100%;
+            height: auto;
+            touch-action: none;
+            cursor: grab;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: url('frame.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .upload {
+            flex: 1;
+            max-width: 200px;
+            padding: 15px;
+            cursor: pointer;
+            background-color: #0D6759; /* Green color */
+            color: white;
+            border-radius: 12px;
+            font-size: 16px;
+            border: none;
+            margin: 0 10px;
+            transition: background 0.3s, transform 0.3s;
+            opacity: 0.8; /* 80% opacity */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .upload i {
+            margin-right: 8px;
+        }
+        .upload:hover {
+            background-color: #0B2E59; /* Darker green for hover */
+            transform: translateY(-2px);
+        }
+        .button {
+            flex: 1;
+            max-width: 200px;
+            padding: 15px;
+            cursor: not-allowed;
+            background-color: #cccccc;
+            color: white;
+            border-radius: 12px;
+            font-size: 16px;
+            border: none;
+            margin: 0 10px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .button.active {
+            cursor: pointer;
+            background-color: #3498db; /* Blue color */
+        }
+        .button.active:hover {
+            background-color: #2980b9; /* Darker blue for hover */
+            transform: translateY(-2px);
+        }
+        .logo {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        .countdown-container {
+            margin-top: 20px; /* Space between download button and countdown */
+            background-color: #ffffff; /* Clean white background */
+            padding: 20px; /* Padding for the countdown container */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+        }
+        .countdown {
+            font-size: 48px; /* Large font size for numbers */
+            color: #D43F36; /* Bright red color for numbers */
+        }
+        .countdown-label {
+            font-size: 16px; /* Smaller font size for labels */
+            color: black; /* Black color for labels */
+            text-transform: uppercase; /* Uppercase labels */
+            margin-top: 5px; /* Space between number and label */
+        }
+        .separator {
+            font-size: 48px; /* Same size as numbers */
+            color: #D43F36; /* Bright red for separators */
+        }
+    </style>
+</head>
+<body>
+    <img class="logo" src="Logo.png" alt="Logo">
+
+    <div class="canvas-container">
+        <canvas id="canvas" class="canvas" width="1080" height="1080"></canvas>
+        <div class="overlay"></div>
+    </div>
+
+    <div class="controls">
+        <label for="uploadButton" class="upload"><i class="fa-solid fa-camera"></i> Choose Photo</label>
+        <button id="cropButton" class="button">Download</button>
+    </div>
+
+    <input type="file" id="uploadButton" accept="image/*" style="display: none;">
+
+    <div class="countdown-container">
+        <div class="countdown">
+            <span id="days">00</span>
+            <span class="separator">:</span>
+            <span id="hours">00</span>
+            <span class="separator">:</span>
+            <span id="minutes">00</span>
+            <span class="separator">:</span>
+            <span id="seconds">00</span>
+        </div>
+        <div class="countdown-labels">
+            <span class="countdown-label">DAY</span>
+            <span class="countdown-label">HOUR</span>
+            <span class="countdown-label">MIN</span>
+            <span class="countdown-label">SEC</span>
+        </div>
+    </div>
+
+    <script>
+        const uploadButton = document.getElementById('uploadButton');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const cropButton = document.getElementById('cropButton');
+
+        let img = new Image();
+        let overlayImg = new Image();
+        overlayImg.src = 'frame.png';
+        let scale = 1;
+        let angle = 0;
+        let startX = 0;
+        let startY = 0;
+        let isPanning = false;
+        let offsetX = 0;
+        let offsetY = 0;
+        let initialDistance = 0;
+        let initialScale = 1;
+
+        uploadButton.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.src = e.target.result;
+                img.onload = () => {
+                    drawImage();
+                    activateButton();
+                    updateUploadButton();
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function drawImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, -img.width / 2 + offsetX, -img.height / 2 + offsetY);
+            ctx.restore();
+        }
+
+        function activateButton() {
+            cropButton.classList.add('active');
+            cropButton.style.cursor = 'pointer';
+        }
+
+        function updateUploadButton() {
+            const uploadButtonLabel = document.querySelector('.upload');
+            uploadButtonLabel.style.opacity = '1'; /* Set to 100% opacity */
+        }
+
+        canvas.addEventListener('mousedown', (event) => {
+            isPanning = true;
+            startX = event.clientX - offsetX;
+            startY = event.clientY - offsetY;
+            canvas.style.cursor = 'grabbing';
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isPanning = false;
+            canvas.style.cursor = 'grab';
+        });
+
+        canvas.addEventListener('mousemove', (event) => {
+            if (isPanning) {
+                offsetX = event.clientX - startX;
+                offsetY = event.clientY - startY;
+                drawImage();
+            }
+        });
+
+        canvas.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            scale += event.deltaY * -0.01;
+            scale = Math.min(Math.max(.125, scale), 4);
+            drawImage();
+        });
+
+        canvas.addEventListener('touchstart', (event) => {
+            if (event.touches.length === 2) {
+                initialDistance = getDistance(event.touches);
+                initialScale = scale;
+            } else if (event.touches.length === 1) {
+                isPanning = true;
+                startX = event.touches[0].clientX - offsetX;
+                startY = event.touches[0].clientY - offsetY;
+            }
+        });
+
+        canvas.addEventListener('touchmove', (event) => {
+            event.preventDefault();
+            if (event.touches.length === 2) {
+                const currentDistance = getDistance(event.touches);
+                scale = initialScale * (currentDistance / initialDistance);
+                scale = Math.min(Math.max(.125, scale), 4);
+                drawImage();
+            } else if (event.touches.length === 1 && isPanning) {
+                offsetX = event.touches[0].clientX - startX;
+                offsetY = event.touches[0].clientY - startY;
+                drawImage();
+            }
+        });
+
+        canvas.addEventListener('touchend', (event) => {
+            if (event.touches.length < 2) {
+                isPanning = false;
+                canvas.style.cursor = 'grab';
+            }
+        });
+
+        function getDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        cropButton.addEventListener('click', () => {
+            if (cropButton.classList.contains('active')) {
+                const croppedCanvas = document.createElement('canvas');
+                croppedCanvas.width = 1080;
+                croppedCanvas.height = 1080;
+                const croppedCtx = croppedCanvas.getContext('2d');
+
+                croppedCtx.clearRect(0, 0, croppedCanvas.width, croppedCanvas.height);
+                croppedCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, croppedCanvas.width, croppedCanvas.height);
+                croppedCtx.drawImage(overlayImg, 0, 0, croppedCanvas.width, croppedCanvas.height);
+
+                croppedCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'cropped-image.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            }
+        });
+
+        // Set the date we're counting down to
+        const countDownDate = new Date("May 03, 2025 00:00:00").getTime();
+
+        // Update the count down every 1 second
+        const x = setInterval(function() {
+            // Get today's date and time
+            const now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            const distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the corresponding elements
+            document.getElementById("days").innerHTML = String(days).padStart(2, '0');
+            document.getElementById("hours").innerHTML = String(hours).padStart(2, '0');
+            document.getElementById("minutes").innerHTML = String(minutes).padStart(2, '0');
+            document.getElementById("seconds").innerHTML = String(seconds).padStart(2, '0');
+
+            // If the countdown is over, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.querySelector('.countdown').innerHTML = "EXPIRED";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
