@@ -1,259 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Kanit:wght@100..900&family=Rowdies:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Cropping Page</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: 'Kanit', sans-serif;
-            background-color: #f0f4f7;
-            margin: 0;
-            padding: 20px;
-        }
-        .canvas-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            margin: 20px auto;
-            border-radius: 20px;
-            overflow: hidden;
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .canvas {
-            width: 100%;
-            height: auto;
-            touch-action: none;
-            cursor: grab;
-        }
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background-image: url('frame.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .upload {
-            flex: 1;
-            max-width: 200px;
-            padding: 15px;
-            cursor: pointer;
-            background-color: #0D6759; /* Green color */
-            color: white;
-            border-radius: 12px;
-            font-size: 16px;
-            border: none;
-            margin: 0 10px;
-            transition: background 0.3s, transform 0.3s;
-            opacity: 0.8; /* 80% opacity */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .upload i {
-            margin-right: 8px;
-        }
-        .upload:hover {
-            background-color: #0B2E59; /* Darker green for hover */
-            transform: translateY(-2px);
-        }
-        .button {
-            flex: 1;
-            max-width: 200px;
-            padding: 15px;
-            cursor: not-allowed;
-            background-color: #cccccc;
-            color: white;
-            border-radius: 12px;
-            font-size: 16px;
-            border: none;
-            margin: 0 10px;
-            transition: background 0.3s, transform 0.3s;
-        }
-        .button.active {
-            cursor: pointer;
-            background-color: #3498db; /* Blue color */
-        }
-        .button.active:hover {
-            background-color: #2980b9; /* Darker blue for hover */
-            transform: translateY(-2px);
-        }
-        .logo {
-            width: 200px;
-            margin-bottom: 20px;
-        }
-    </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Kanit:wght@100..900&family=Rowdies:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badriyya Gratonium Frame</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Kanit', sans-serif;
+      background-color: #f0f4f7;
+      margin: 0;
+      padding: 20px;
+    }
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+      border-radius: 20px;
+      overflow: hidden;
+      background-color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .canvas {
+      width: 100%;
+      height: auto;
+      touch-action: none;
+      cursor: grab;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background-image: url('frame.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px auto 0;
+      max-width: 400px;
+    }
+    .upload, .button {
+      flex: 1;
+      max-width: 200px;
+      padding: 15px;
+      cursor: pointer;
+      border-radius: 12px;
+      font-size: 16px;
+      border: none;
+      margin: 0 10px;
+      transition: background 0.3s, transform 0.3s, width 0.3s;
+    }
+    .upload {
+      background-color: #0D6759; /* Green color */
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .upload i {
+      margin-right: 8px;
+      margin-left: 8px;
+    }
+    .upload:hover {
+      background-color: #0B2E59; /* Darker green for hover */
+      transform: translateY(-2px);
+    }
+    .button {
+      background-color: #cccccc;
+      color: white;
+      cursor: not-allowed;
+      display: none; /* Hidden by default */
+    }
+    .button.active {
+      cursor: pointer;
+      background-color: #3498db; /* Blue color */
+    }
+    .button.active:hover {
+      background-color: #2980b9; /* Darker blue for hover */
+      transform: translateY(-2px);
+    }
+    .logo {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+
+    /* Mobile styling adjustments */
+    @media only screen and (max-width: 480px) {
+      .upload {
+        width: 100%; /* Make the upload button 100% width before photo selection */
+        max-width: none;
+      }
+      .button {
+        flex: 1; /* Make the download button smaller */
+        width: 100%; /* Full width for the download button */
+        max-width: 400px; /* Limit the width to 400px */
+      }
+      .controls {
+        flex-wrap: wrap; /* Allow buttons to wrap if necessary */
+      }
+    }
+
+    /* After photo is selected, shrink the upload button */
+    .upload.shrink {
+      width: 20px; /* Shrink the upload button to 30px */
+      flex: none; /* Ensure it doesn't take more space than needed */
+    }
+
+    /* Adjust the download button when the upload button is shrunk */
+    .controls.shrink-buttons .button {
+      width: 100%; /* Make the download button take full width */
+      max-width: 400px; /* Limit max-width of the download button */
+    }
+  </style>
 </head>
 <body>
-    <img class="logo" src="Logo.png" alt="Logo">
+  <img class="logo" src="Logo.png" alt="Logo">
 
-    <div class="canvas-container">
-        <canvas id="canvas" class="canvas" width="1080" height="1080"></canvas>
-        <div class="overlay"></div>
-    </div>
+  <div class="canvas-container">
+    <canvas id="canvas" class="canvas" width="1080" height="1080"></canvas>
+    <div class="overlay"></div>
+  </div>
 
-    <div class="controls">
-        <label for="uploadButton" class="upload"><i class="fa-solid fa-camera"></i> Choose Photo</label>
-        <button id="cropButton" class="button">Download</button>
-    </div>
+  <div class="controls">
+    <label for="uploadButton" class="upload">
+      <i class="fa-solid fa-camera"></i>
+      <span>Choose Photo</span>
+    </label>
+    <button id="cropButton" class="button">Download</button>
+  </div>
 
-    <input type="file" id="uploadButton" accept="image/*" style="display: none;">
+  <input type="file" id="uploadButton" accept="image/*" style="display: none;">
 
-    <script>
-        const uploadButton = document.getElementById('uploadButton');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const cropButton = document.getElementById('cropButton');
+  <script>
+    const uploadButton = document.getElementById('uploadButton');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const cropButton = document.getElementById('cropButton');
+    const uploadLabel = document.querySelector('.upload');
+    const controls = document.querySelector('.controls');  // For adjusting button styles
 
-        let img = new Image();
-        let overlayImg = new Image();
-        overlayImg.src = 'frame.png';
-        let scale = 1;
-        let angle = 0;
-        let startX = 0;
-        let startY = 0;
-        let isPanning = false;
-        let offsetX = 0;
-        let offsetY = 0;
-        let initialDistance = 0;
-        let initialScale = 1;
+    let img = new Image();
+    let overlayImg = new Image();
+    overlayImg.src = 'frame.png';
+    let scale = 1;
+    let angle = 0;
+    let startX = 0;
+    let startY = 0;
+    let isPanning = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let initialDistance = 0;
+    let initialScale = 1;
 
-        uploadButton.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                img.src = e.target.result;
-                img.onload = () => {
-                    drawImage();
-                    activateButton();
-                    updateUploadButton();
-                };
-            };
-            reader.readAsDataURL(file);
-        });
+    uploadButton.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+        img.onload = () => {
+          drawImage();
+          activateButton();
+          updateUploadButton();
+        };
+      };
+      reader.readAsDataURL(file);
+    });
 
-        function drawImage() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate(angle * Math.PI / 180);
-            ctx.scale(scale, scale);
-            ctx.drawImage(img, -img.width / 2 + offsetX, -img.height / 2 + offsetY);
-            ctx.restore();
-        }
+    function drawImage() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(angle * Math.PI / 180);
+      ctx.scale(scale, scale);
+      ctx.drawImage(img, -img.width / 2 + offsetX, -img.height / 2 + offsetY);
+      ctx.restore();
+    }
 
-        function activateButton() {
-            cropButton.classList.add('active');
-            cropButton.style.cursor = 'pointer';
-        }
+    function activateButton() {
+      cropButton.classList.add('active');
+      cropButton.style.cursor = 'pointer';
+      cropButton.style.display = 'block'; // Show the download button after image selection
+    }
 
-        function updateUploadButton() {
-            const uploadButtonLabel = document.querySelector('.upload');
-            uploadButtonLabel.style.opacity = '1'; /* Set to 100% opacity */
-        }
+    function updateUploadButton() {
+      // Shrink the upload button after photo selection (on mobile screens)
+      uploadLabel.classList.add('shrink');
+      // Remove any spacing between icon and text by emptying the text span.
+      const textSpan = uploadLabel.querySelector('span');
+      if (textSpan) {
+        textSpan.textContent = '';
+      }
+      controls.classList.add('shrink-buttons'); // Apply class to adjust download button
+    }
 
-        canvas.addEventListener('mousedown', (event) => {
-            isPanning = true;
-            startX = event.clientX - offsetX;
-            startY = event.clientY - offsetY;
-            canvas.style.cursor = 'grabbing';
-        });
+    canvas.addEventListener('mousedown', (event) => {
+      isPanning = true;
+      startX = event.clientX - offsetX;
+      startY = event.clientY - offsetY;
+      canvas.style.cursor = 'grabbing';
+    });
 
-        canvas.addEventListener('mouseup', () => {
-            isPanning = false;
-            canvas.style.cursor = 'grab';
-        });
+    canvas.addEventListener('mouseup', () => {
+      isPanning = false;
+      canvas.style.cursor = 'grab';
+    });
 
-        canvas.addEventListener('mousemove', (event) => {
-            if (isPanning) {
-                offsetX = event.clientX - startX;
-                offsetY = event.clientY - startY;
-                drawImage();
-            }
-        });
+    canvas.addEventListener('mousemove', (event) => {
+      if (isPanning) {
+        offsetX = event.clientX - startX;
+        offsetY = event.clientY - startY;
+        drawImage();
+      }
+    });
 
-        canvas.addEventListener('wheel', (event) => {
-            event.preventDefault();
-            scale += event.deltaY * -0.01;
-            scale = Math.min(Math.max(.125, scale), 4);
-            drawImage();
-        });
+    canvas.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      scale += event.deltaY * -0.01;
+      scale = Math.min(Math.max(0.125, scale), 4);
+      drawImage();
+    });
 
-        canvas.addEventListener('touchstart', (event) => {
-            if (event.touches.length === 2) {
-                initialDistance = getDistance(event.touches);
-                initialScale = scale;
-            } else if (event.touches.length === 1) {
-                isPanning = true;
-                startX = event.touches[0].clientX - offsetX;
-                startY = event.touches[0].clientY - offsetY;
-            }
-        });
+    canvas.addEventListener('touchstart', (event) => {
+      if (event.touches.length === 2) {
+          initialDistance = getDistance(event.touches);
+          initialScale = scale;
+      } else if (event.touches.length === 1) {
+          isPanning = true;
+          startX = event.touches[0].clientX - offsetX;
+          startY = event.touches[0].clientY - offsetY;
+      }
+    });
 
-        canvas.addEventListener('touchmove', (event) => {
-            event.preventDefault();
-            if (event.touches.length === 2) {
-                const currentDistance = getDistance(event.touches);
-                scale = initialScale * (currentDistance / initialDistance);
-                scale = Math.min(Math.max(.125, scale), 4);
-                drawImage();
-            } else if (event.touches.length === 1 && isPanning) {
-                offsetX = event.touches[0].clientX - startX;
-                offsetY = event.touches[0].clientY - startY;
-                drawImage();
-            }
-        });
+    canvas.addEventListener('touchmove', (event) => {
+      event.preventDefault();
+      if (event.touches.length === 2) {
+          const currentDistance = getDistance(event.touches);
+          scale = initialScale * (currentDistance / initialDistance);
+          scale = Math.min(Math.max(0.125, scale), 4);
+          drawImage();
+      } else if (event.touches.length === 1 && isPanning) {
+          offsetX = event.touches[0].clientX - startX;
+          offsetY = event.touches[0].clientY - startY;
+          drawImage();
+      }
+    });
 
-        canvas.addEventListener('touchend', (event) => {
-            if (event.touches.length < 2) {
-                isPanning = false;
-                canvas.style.cursor = 'grab';
-            }
-        });
+    canvas.addEventListener('touchend', (event) => {
+      if (event.touches.length < 2) {
+          isPanning = false;
+          canvas.style.cursor = 'grab';
+      }
+    });
 
-        function getDistance(touches) {
-            const dx = touches[0].clientX - touches[1].clientX;
-            const dy = touches[0].clientY - touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
+    function getDistance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
 
-        cropButton.addEventListener('click', () => {
-            if (cropButton.classList.contains('active')) {
-                const croppedCanvas = document.createElement('canvas');
-                croppedCanvas.width = 1080;
-                croppedCanvas.height = 1080;
-                const croppedCtx = croppedCanvas.getContext('2d');
+    cropButton.addEventListener('click', () => {
+      if (cropButton.classList.contains('active')) {
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = 1080;
+        croppedCanvas.height = 1080;
+        const croppedCtx = croppedCanvas.getContext('2d');
 
-                croppedCtx.clearRect(0, 0, croppedCanvas.width, croppedCanvas.height);
-                croppedCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, croppedCanvas.width, croppedCanvas.height);
-                croppedCtx.drawImage(overlayImg, 0, 0, croppedCanvas.width, croppedCanvas.height);
+        croppedCtx.clearRect(0, 0, croppedCanvas.width, croppedCanvas.height);
+        croppedCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, croppedCanvas.width, croppedCanvas.height);
+        croppedCtx.drawImage(overlayImg, 0, 0, croppedCanvas.width, croppedCanvas.height);
 
-                croppedCanvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'cropped-image.png';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }, 'image/png');
-            }
-        });
-    </script>
+        croppedCanvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'cropped-image.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      }
+    });
+  </script>
 </body>
 </html>
